@@ -29,6 +29,8 @@
     <canvas id="platno2" width="500" height="100" style="border:1px dashed #009999"></canvas>
     <br>
     <button onclick="DodajVirus();">dodaj virus</button>
+   
+    <button onclick="PonastaviImunost();">Ponastavi imunost</button>
     <br />
     <canvas id="cv1" width="1000" height="500" style="border:1px dashed #009999"></canvas>
     <br>
@@ -40,9 +42,9 @@
         var virusi = []; // virusi, ki jih dodamo ročno...
         var vojaki = [];
         var čas = 0; // spremenljivka, ki predstavlja čas
-        var številoCelic = 100; // določimo število agentov na platnu
+        var številoCelic = 500; // določimo število agentov na platnu
         var številoVirusov = 0;
-        var številoVojakov = 10;
+        var številoVojakov = 50;
         var števecZelenih = 0; // števec zelenih agentov
         var števecRdečih = 0; // števec rdečih agentov
         var graf1; // spremenljivka oz. objekt razreda Graf
@@ -55,14 +57,16 @@
         var OzdravljeneCelice = new Array();
         var OdstraniVojake = new Array();
         var OdstraniVirus = new Array();
+        var hudaOkuzba = false;
         class Agent {
-            constructor(x, y, xVel, yVel, barva, okuzen) {
+            constructor(x, y, xVel, yVel, barva, okuzen, imun) {
                 this.x = x; // določimo lastnost x pozicije agenta
                 this.y = y; // določimo lastnost y pozicije agenta
                 this.xVel = xVel; // določimo hitrost v smeri x
                 this.yVel = yVel; // določimo hitrost v smeri y
                 this.barva = barva; // določimo lastnost barva
                 this.okuzen = okuzen;
+                this.imun = imun;
             }
             update() { // članska funkcija - ta funkcija je za vse agente enaka
                 this.x += this.xVel; // pozicija x se spremeni glede na hitrost v smeri x t.j. xVel
@@ -206,7 +210,10 @@
                     // če je razlika v razdalji med agentoma manjša od 10 izvedemo trk
                     if (dist < 10) { // če je pogoj, da sta agenta dovolj blizu izpolnjen (trk)
                         številoTrkovVkoraku++;
+
+
                         izvediTrk(i, j); // izvedemo trk med agentoma z indeksoma i in j
+
                     }
                 }
                 for (var j = 0; j < številoVirusov; j++) {
@@ -220,7 +227,10 @@
                     // če je razlika v razdalji med agentoma manjša od 10 izvedemo trk
                     if (dist < 10) { // če je pogoj, da sta agenta dovolj blizu izpolnjen (trk)
                         številoTrkovVkoraku++;
-                        Okuzi(i, j); // izvedemo trk med agentoma z indeksoma i in                     }
+
+                        Okuzi(i, j); // izvedemo trk med agentoma z indeksoma i in
+
+
                     }
                 }
                 for (var j = 0; j < številoVojakov; j++) {
@@ -287,8 +297,8 @@
             celice[indeksPrvega].yVel = celice[indeksDrugega].yVel;
             virusi[indeksDrugega].xVel = tempX;
             virusi[indeksDrugega].yVel = tempY;
-
-            celice[indeksPrvega].okuzen = 1;
+            if (celice[indeksPrvega].imun != 1)
+                celice[indeksPrvega].okuzen = 1;
 
         }
 
@@ -328,12 +338,14 @@
             // če trčita zeleni in rdeči, rdeči postane zelen
             // če je prvi rdeč (0) in drugi zelen (1)
             if (celice[indeksPrvega].okuzen == 0 && celice[indeksDrugega].okuzen == 1) {
-                celice[indeksPrvega].okuzen = 1; // prvega, ki je bil prej rdeč(0) prebarvamo na zeleno (1)
+                if (celice[indeksPrvega].imun != 1)
+                    celice[indeksPrvega].okuzen = 1; // prvega, ki je bil prej rdeč(0) prebarvamo na zeleno (1)
                 številoTrkovZelenegaZrdečimVkoraku++; // povečamo števec trkov zelen-rdeč
             }
             // če je prvi zelen (1) in drugi rdeč (0)
             if (celice[indeksPrvega].okuzen == 1 && celice[indeksDrugega].okuzen == 0) {
-                celice[indeksDrugega].okuzen = 1; // drugega, ki je bil prej rdeč(0) prebarvamo na zeleno (1)
+                if (celice[indeksDrugega].imun != 1)
+                    celice[indeksDrugega].okuzen = 1; // drugega, ki je bil prej rdeč(0) prebarvamo na zeleno (1)
                 številoTrkovZelenegaZrdečimVkoraku++; // povečamo števec trkov zelen-rdeč
             }
 
@@ -365,21 +377,10 @@
                 for (var i = celice.length; i < številoCelic; i++) {
                     celice[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
                     celice[i].okuzen = 0;
+                    celice[i].imun = 1;
                 }
             }
-            if (števecZelenih > 50 && števecZelenih < 60)
-                številoVojakov = 20;
-            if (števecZelenih > 60 && števecZelenih < 70)
-                številoVojakov = 30;
-            if (števecZelenih > 70)
-                številoVojakov = 40;
-            if (števecZelenih < 50)
-                številoVojakov = 10;
-            if (vojaki.length < številoVojakov) {
-                for (var i = vojaki.length; i < številoVojakov; i++) {
-                    vojaki[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
-                }
-            }
+
             celice.forEach(function (agent) {
                 if (agent.okuzen == 1) {
                     ctx.fillStyle = "#00ff00"; // določimo zeleno barvo
@@ -393,23 +394,37 @@
 
             });
 
-            virusi.forEach(function (agent) {
-                ctx.fillStyle = "#ff00ee";
-                ctx.beginPath();
-                ctx.arc(agent.x, agent.y, 5, 0, 2 * Math.PI);
-                ctx.closePath();
-                ctx.fill();
-            });
 
-            vojaki.forEach(function (agent) {
-                ctx.strokeRect(agent.x, agent.y, 11, 11);
-            });
-            //prveriAgente();
+            if (števecZelenih > (številoCelic * 0.2) && hudaOkuzba == false)
+                številoVojakov = številoCelic * 0.2;
+            if (števecZelenih > (številoCelic * 0.3) && hudaOkuzba == false)
+                številoVojakov = številoCelic * 0.3;
+            if (števecZelenih > (številoCelic * 0.5)) {
+                številoVojakov = številoCelic;
+                hudaOkuzba = true;
+            }
+            if (števecZelenih < 1) {
+                številoVojakov = 50;
+                hudaOkuzba = false;
+            }
+            if (vojaki.length < številoVojakov) {
+                for (var i = vojaki.length; i < številoVojakov; i++) {
+                    vojaki[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
+                }
+            }
+
             for (var i = 0; i < številoVirusov; i++) {
                 virusi[i].update();
+                ctx.fillStyle = "#ff00ff";
+
+                ctx.beginPath();
+                ctx.arc(virusi[i].x, virusi[i].y, 5, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
             }
             for (var i = 0; i < številoVojakov; i++) {
                 vojaki[i].update();
+                ctx.strokeRect(vojaki[i].x, vojaki[i].y, 11, 11);
             }
             for (var i = 0; i < številoCelic; i++) {
                 celice[i].update(); // preračun nove lokacije 1. agent
@@ -433,7 +448,7 @@
             // določimo rdečo barvo kot polnilo
             for (var i = 0; i < številoVirusov; i++) {
                 virusi[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
-                ctx.fillStyle = "#ff00ff";
+
                 ctx.beginPath();
                 ctx.arc(virusi[i].x, virusi[i].y, 5, 0, 2 * Math.PI);
                 ctx.closePath();
@@ -452,6 +467,7 @@
 
                 celice[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
                 celice[i].okuzen = 0;
+                celice[i].imun = 0;
                 ctx.fillRect(celice[i].x, celice[i].y, 10, 10); // agenta postavimo na platno
                 //ctx.fillStyle = "#3370d4";
 
@@ -481,7 +497,7 @@
         function start() {
 
             zanka();
-            aktiven = setTimeout("start()", 10); // na 10ms kličemo start();
+            aktiven = setTimeout("start()", 1); // na 10ms kličemo start();
 
         }
 
@@ -499,6 +515,7 @@
             številoVirusov++;
             for (var i = številoVirusov - 1; i < številoVirusov; i++) {
                 virusi[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
+
                 ctx.fillStyle = "#ff00ff";
                 ctx.beginPath();
                 ctx.arc(virusi[i].x, virusi[i].y, 5, 0, 2 * Math.PI);
@@ -506,6 +523,12 @@
                 ctx.fill();
             }
             //zanka();
+        }
+        function PonastaviImunost()
+        {
+            for (var i = 0; i < številoCelic; i++) {
+                celice[i].imun = 0;
+            }
         }
     </script>
 
