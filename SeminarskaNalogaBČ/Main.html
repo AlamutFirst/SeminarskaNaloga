@@ -41,7 +41,7 @@
         var vojaki = [];
         var čas = 0; // spremenljivka, ki predstavlja čas
         var številoCelic = 100; // določimo število agentov na platnu
-        var številoVirusov = 1;
+        var številoVirusov = 0;
         var številoVojakov = 10;
         var števecZelenih = 0; // števec zelenih agentov
         var števecRdečih = 0; // števec rdečih agentov
@@ -190,12 +190,10 @@
         function preveriBližinoAgentov() {
             številoTrkovVkoraku = 0; // ponastavimo števec števila trkov ob vsakem koraku
             številoTrkovZelenegaZrdečimVkoraku = 0; // ponastavitev števca r-z
-            for (var i = 0; i < številoCelic; i++)
-            {
+            for (var i = 0; i < številoCelic; i++) {
                 var A = celice[i];
 
-                for (var j = i + 1; j < številoCelic; j++)
-                {
+                for (var j = i + 1; j < številoCelic; j++) {
                     var B = celice[j];
 
                     // izračunamo razlike koordinat
@@ -226,8 +224,8 @@
             }
             return številoTrkovVkoraku;
         }
-            
-            
+
+
         function Okuzi(indeksPrvega, indeksDrugega) {
             var x1 = celice[indeksPrvega].x;
             var y1 = celice[indeksPrvega].y;
@@ -331,13 +329,13 @@
                 ctx.closePath();
                 ctx.fill();
             }
-            //for (var i = 0; i < številoVojakov; i++) {
-            //    vojaki[i].update();
+            for (var i = 0; i < številoVojakov; i++) {
+                vojaki[i].update();
 
-            //    //ctx.fillStyle = "#00ff00";
-            //    //ctx.strokeStyle = "#000000";
-            //    ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
-            //}
+                //ctx.fillStyle = "#00ff00";
+                //ctx.strokeStyle = "#000000";
+                ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
+            }
             for (var i = 0; i < številoCelic; i++) {
                 celice[i].update(); // preračun nove lokacije 1. agent
                 if (celice[i].okuzen == 1) {
@@ -376,12 +374,12 @@
                 ctx.closePath();
                 ctx.fill();
             }
-            //for (var i = 0; i < številoVojakov; i++) {
-            //    vojaki[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
-            //    //ctx.fillStyle = "#00ff00";
-            //    //ctx.strokeStyle = "#000000";
-            //    ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
-            //}
+            for (var i = 0; i < številoVojakov; i++) {
+                vojaki[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
+                //ctx.fillStyle = "#00ff00";
+                //ctx.strokeStyle = "#000000";
+                ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
+            }
 
             for (var i = 0; i < številoCelic; i++) {
                 ctx.fillStyle = "#ff0000";
@@ -433,7 +431,7 @@
         }
         function DodajVirus() {
             številoVirusov++;
-            for (var i = 0; i < številoVirusov; i++) {
+            for (var i = številoVirusov - 1; i < številoVirusov; i++) {
                 virusi[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
                 ctx.fillStyle = "#00ff00";
                 ctx.beginPath();
