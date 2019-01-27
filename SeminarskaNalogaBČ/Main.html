@@ -11,7 +11,7 @@
 </head>
 <body onload="load();">
     <!-- ko se spletna stran odpre poženemo najprej fukcijo load() -->
-    
+
     <br>
     <button onclick="startGumb();">Start</button>
     <button onclick="stop();">Stop</button>
@@ -190,10 +190,12 @@
         function preveriBližinoAgentov() {
             številoTrkovVkoraku = 0; // ponastavimo števec števila trkov ob vsakem koraku
             številoTrkovZelenegaZrdečimVkoraku = 0; // ponastavitev števca r-z
-            for (var i = 0; i < številoCelic; i++) {
+            for (var i = 0; i < številoCelic; i++)
+            {
                 var A = celice[i];
 
-                for (var j = i + 1; j < številoCelic; j++) {
+                for (var j = i + 1; j < številoCelic; j++)
+                {
                     var B = celice[j];
 
                     // izračunamo razlike koordinat
@@ -207,7 +209,6 @@
                         izvediTrk(i, j); // izvedemo trk med agentoma z indeksoma i in j
                     }
                 }
-
                 for (var j = 0; j < številoVirusov; j++) {
                     var B = virusi[j];
 
@@ -222,9 +223,11 @@
                         Okuzi(i, j); // izvedemo trk med agentoma z indeksoma i in                     }
                     }
                 }
-                return številoTrkovVkoraku;
             }
+            return številoTrkovVkoraku;
         }
+            
+            
         function Okuzi(indeksPrvega, indeksDrugega) {
             var x1 = celice[indeksPrvega].x;
             var y1 = celice[indeksPrvega].y;
@@ -310,59 +313,58 @@
 
 
 
-            function zanka() {
+        function zanka() {
 
-                števecRdečih = 0;
-                števecZelenih = 0;
+            števecRdečih = 0;
+            števecZelenih = 0;
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // brišemo celotno platno
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // brišemo celotno platno
 
-                //preveriBližinoAgentov();
+            //preveriBližinoAgentov();
 
-                document.getElementById("številoTrkov").value = preveriBližinoAgentov();
-                for (var i = 0; i < številoVirusov; i++) {
-                    virusi[i].update();
-                    ctx.fillStyle = "#00ff00";
-                    ctx.beginPath();
-                    ctx.arc(virusi[i].x, virusi[i].y, 5, 0, 2 * Math.PI);
-                    ctx.closePath();
-                    ctx.fill();
+            document.getElementById("številoTrkov").value = preveriBližinoAgentov();
+            for (var i = 0; i < številoVirusov; i++) {
+                virusi[i].update();
+                ctx.fillStyle = "#00ff00";
+                ctx.beginPath();
+                ctx.arc(virusi[i].x, virusi[i].y, 5, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
+            //for (var i = 0; i < številoVojakov; i++) {
+            //    vojaki[i].update();
+
+            //    //ctx.fillStyle = "#00ff00";
+            //    //ctx.strokeStyle = "#000000";
+            //    ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
+            //}
+            for (var i = 0; i < številoCelic; i++) {
+                celice[i].update(); // preračun nove lokacije 1. agent
+                if (celice[i].okuzen == 1) {
+                    ctx.fillStyle = "#00ff00"; // določimo zeleno barvo
+                    števecZelenih++;
                 }
-                //for (var i = 0; i < številoVojakov; i++) {
-                //    vojaki[i].update();
-                    
-                //    //ctx.fillStyle = "#00ff00";
-                //    //ctx.strokeStyle = "#000000";
-                //    ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
-                //}
-                for (var i = 0; i < številoCelic; i++) {
-                    celice[i].update(); // preračun nove lokacije 1. agent
-                    if (celice[i].okuzen == 1) {
-                        ctx.fillStyle = "#00ff00"; // določimo zeleno barvo
-                        števecZelenih++;
-                    }
-                    else {
-                        ctx.fillStyle = "#ff0000"; // sicer nastavimo rdečo barvo
-                        števecRdečih++;
-                    }
-                    ctx.fillRect(celice[i].x, celice[i].y, 10, 10); // agenta postavimo na platno
-
+                else {
+                    ctx.fillStyle = "#ff0000"; // sicer nastavimo rdečo barvo
+                    števecRdečih++;
                 }
-
-
-                graf1.izriši(števecZelenih);
-                graf2.izriši(številoTrkovZelenegaZrdečimVkoraku);
-
-                čas++; // čas povečamo za 1
-
-                document.getElementById("številka").value = čas; // izpišemo časovni korak
-                document.getElementById("rdeči").value = števecRdečih; // izpišemo št. rdečih
-                document.getElementById("zeleni").value = števecZelenih; // izpišemo št. zelenih
+                ctx.fillRect(celice[i].x, celice[i].y, 10, 10); // agenta postavimo na platno
 
             }
 
-            function load()
-            {
+
+            graf1.izriši(števecZelenih);
+            graf2.izriši(številoTrkovZelenegaZrdečimVkoraku);
+
+            čas++; // čas povečamo za 1
+
+            document.getElementById("številka").value = čas; // izpišemo časovni korak
+            document.getElementById("rdeči").value = števecRdečih; // izpišemo št. rdečih
+            document.getElementById("zeleni").value = števecZelenih; // izpišemo št. zelenih
+
+        }
+
+        function load() {
             canvas = document.getElementById("cv1");
             ctx = canvas.getContext("2d");
             // določimo rdečo barvo kot polnilo
