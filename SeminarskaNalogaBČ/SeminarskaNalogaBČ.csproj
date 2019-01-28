@@ -77,6 +77,7 @@
     <Content Include="bootstrap.min.js" />
     <Content Include="jquery.min.js" />
     <Content Include="Main.html" />
+    <Content Include="SistemDynamics.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
