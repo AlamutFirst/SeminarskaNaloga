@@ -6,50 +6,69 @@
 <html>
 <head>
     <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="jqmath-0.4.3.css">
+
+    <script src="jquery-1.4.3.min.js"></script>
+    <script src="jqmath-etc-0.4.6.min.js" charset="utf-8"></script>
 
 
     <script src="jquery.min.js"></script>
     <script src="bootstrap.min.js"></script>
-    <title>Primer zvezne simulacije</title>
+    <title>Sistemska dinamika</title>
 </head>
 <body onload="load();">
     <div class="container">
+        <br />
+        <div class="shadow-lg p-3 mb-5 bg-white rounded">
+            <h1>Sistemska dinamika</h1>
+            <br />
+            <p>
+                Imam sistem drugega reda. Radi bi prikazali odziv sistema na podalgi enotine stopnice. V našem primeru bomo
+                predstavili odziv sistema za 4 primere. To je ko je: $$&xi;= 0.1$$  $$&xi=-0.1 $$  $$&xi;=1$$  $$&xi;=0$$
+            </p>
+
+            <p>Forumla se glasi:</p>
+            <h2>
+
+                $$x(t)=1 + e^(-&xi;t\) (-cos(t√1-&xi;^2) -   e^(&xi;t\) (-sin(t√1-&xi;^2)$$
+
+            </h2>
+            <br />
+            <p>
+                Pritisnite gumb start in simulacija se bo začela!
+            </p>
+        </div>
+        <br />
         <!-- ko se spletna stran odpre poženemo najprej fukcijo load() -->
         <script src="graf2.js"></script>
-        stopČas: <input type="text" id="stopČas" value=25>
-        <button onclick="startGumb();">Start</button>
-        <button onclick="stop();">Stop</button>
-        <button onclick="koračniZagon();">Koračno</button>
-        <div id="izpis1"></div>
-        <div id="izpis2"></div>
-        <div id="izpis3"></div>
-        <br>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">Vpišti velikost pozitivnega dušenja:</span>
+                <span class="input-group-text" id="basic-addon1">stopČas:</span>
             </div>
-            <input type="text" class="form-control" placeholder="Velikost med 0 in 1" aria-label="Username" aria-describedby="basic-addon1" id="PozDusenje">
+            <input id="stopČas" value="25" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
         </div>
-        <br>
-        <canvas id="platno1" width="500" height="200" style="border:1px dashed #009999"></canvas>
-        <br>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">Vpišti velikost pozitivnega dušenja:</span>
-            </div>
-            <input type="text" class="form-control" placeholder="Velikost med -1 in 0" aria-label="Username" aria-describedby="basic-addon1" id="NegDusenje">
-        </div>
-        <br>
-        <canvas id="platno2" width="500" height="200" style="border:1px dashed #009999"></canvas>
         <br />
+        <button class="btn btn-success" onclick="startGumb();">Start</button>
+        <button class="btn btn-danger" onclick="stop();">Stop</button>
+        <button class="btn btn-primary" onclick="koračniZagon();">Koračno</button>
+        <br />
+        <br />
+        <p>
+            Prvi graf prikazuje ko je dušenje pozitivno. Sistem postane stabilen. Drugi graf prikazuje, ko je dušenje negativno. 
+            Sistem postane nestabilen. Tretji graf prikazuje ko je dušenje 0. Sistem niha enakomirno. Četrti graf je ko je dušenje
+            maksimalno. Sistem ob zagonu ne zaniha.
+        </p>
+        <canvas id="platno1" width="500" height="200" style="border:1px dashed #009999"></canvas>
 
+
+        <canvas id="platno2" width="500" height="200" style="border:1px dashed #009999"></canvas>
+
+        <canvas id="platno3" width="500" height="200" style="border:1px dashed #009999"></canvas>
+
+        <canvas id="platno4" width="500" height="200" style="border:1px dashed #009999"></canvas>
+        <br />
         <script type="text/javascript">
             "use strict"; // omogočimo delo z razredi ("class")
-            var izpis1 = document.getElementById("izpis1");
-            var izpis2 = document.getElementById("izpis2");
-            var izpis3 = document.getElementById("izpis3");
-
-            var dt = 1; // časovni korak, delta t pri Eulerjevi numerični integracijski metodi
             var čas = 0; // spremenljivka, ki predstavlja čas
             var stopČas = 100; // čas zaključka izvedbe simulacije
 
@@ -59,11 +78,12 @@
 
             var graf1; // spremenljivka za objekt grafa (objekt razreda Graf)
             var graf2;
+            var graf3;
+            var graf4;
             var aktiven; // za kontrolo izvedbe s "setTimeout"
             var stikaloKoračniZagon = 0; // stikalo za koračno izvedbo
             var gumbStartPritisnjen = 0;
 
-            var niz = new Array(); // za izpis v tabelo
 
             class Level {
                 constructor(value) {
@@ -111,31 +131,48 @@
             // Vrstni red spremenljivk je pomemben, da gredo v polju po vrsti, da jih lahko ob "update"
             // preračunamo. Na začetku so in inicializirana le stanja (Level) in lahko določimo le tiste
             // Aux in Rate elemente, ki so vezani na stanja. Zaporedje je določeno s povezanostjo z "Level"
+            function LoadData() {
+                var LevelPozitivnoDusenje = new Level(1);
+                var LevelNegativnoDusenje = new Level(20);
+                var LevelBrezDusenja = new Level(1);
+                var LevelMaxDusenje = new Level(1);
+                var PozitivnoDusenje = new Rate();
+                var MaxDusenje = new Rate();
+                var BrezDusenja = new Rate();
+                var NegativnoDusenje = new Rate();
+                var DeltaPozitivna = 0.2;
+                var DeltaNegativna = -0.1;
 
-            var LevelPozitivnoDusenje = new Level(0);
-            var LevelNegativnoDusenje = new Level(1);
+                var Deltamax = 1;
+                var DeltaNic = 0;
 
-            var PozitivnoDusenje = new Rate();
-            var NegativnoDusenje = new Rate();
-            var DeltaPozitivna = 0;
-            var DeltaNegativna = -0.2;
+                PozitivnoDusenje.updateFn = function () {
+                    var FristPart = GetFirstCalc(DeltaPozitivna);
+                    var SecnedPart = GetSecnedCalc(DeltaPozitivna);
+                    return (1 + FristPart - SecnedPart);
+                };
 
-            PozitivnoDusenje.updateFn = function () {
-                var FristPart = Math.pow(Math.E, -DeltaPozitivna * čas) * (-Math.cos(čas * Math.sqrt(1 - Math.pow(DeltaPozitivna, 2))));
-                var SecnedPart = Math.pow(Math.E, -DeltaPozitivna * čas) * (Math.sin(čas * Math.sqrt(1 - Math.pow(DeltaPozitivna, 2))));
-                return (1 + FristPart - SecnedPart);
-            };
+                NegativnoDusenje.updateFn = function () {
+                    var FristPart = GetFirstCalc(DeltaNegativna);
+                    var SecnedPart = GetSecnedCalc(DeltaNegativna);
+                    return (1 + FristPart - SecnedPart);
+                };
+                BrezDusenja.updateFn = function () {
+                    var FristPart = GetFirstCalc(DeltaNic);
+                    var SecnedPart = GetSecnedCalc(DeltaNic);
+                    return (1 + FristPart - SecnedPart);
+                };
+                MaxDusenje.updateFn = function () {
+                    var FristPart = GetFirstCalc(Deltamax);
+                    var SecnedPart = GetSecnedCalc(Deltamax);
+                    return (1 + FristPart - SecnedPart);
+                };
 
-            NegativnoDusenje.updateFn = function () {
-                var FristPart = Math.pow(Math.E, -DeltaNegativna * čas) * (-Math.cos(čas * Math.sqrt(1 - Math.pow(DeltaNegativna, 2))));
-                var SecnedPart = Math.pow(Math.E, -DeltaNegativna * čas) * (Math.sin(čas * Math.sqrt(1 - Math.pow(DeltaNegativna, 2))));
-                return (1 + FristPart - SecnedPart);
-            };
-
-
-            LevelPozitivnoDusenje.updateFn = function () { return PozitivnoDusenje.value + 1; };
-            LevelNegativnoDusenje.updateFn = function () { return NegativnoDusenje.value + 75; };
-
+                LevelPozitivnoDusenje.updateFn = function () { return PozitivnoDusenje.value + 1; };
+                LevelNegativnoDusenje.updateFn = function () { return NegativnoDusenje.value + 20; };
+                LevelBrezDusenja.updateFn = function () { return BrezDusenja.value + 1; };
+                LevelMaxDusenje.updateFn = function () { return MaxDusenje.value + 1; };
+            }
             // *************************************************************************************************
             // Definicija modela KONEC
             // *************************************************************************************************
@@ -143,10 +180,15 @@
             // *************************************************************************************************
             // Funkcija inicializacije
             // *************************************************************************************************
-
+            function GetFirstCalc(Delta) {
+                return Math.pow(Math.E, -Delta * čas) * (-Math.cos(čas * Math.sqrt(1 - Math.pow(Delta, 2))));
+            }
+            function GetSecnedCalc(Delta) {
+                return Math.pow(Math.E, -Delta * čas) * (Math.sin(čas * Math.sqrt(1 - Math.pow(Delta, 2))));
+            }
             function init() {
 
-                niz.push(čas); // v niz za izpis v tabelo potisnemo čas
+
 
                 for (var i = 0; i < auxiliaryArray.length; i++) { // najprej gremo po polju auxiliaryArray
                     auxiliaryArray[i].update(); // in vse vrednosti ažuriramo
@@ -156,18 +198,11 @@
                     rateArray[i].update(); // in vse vrednosti ažuriramo
                 }
 
-                //niz[3] = ((rateArray[0].value).toFixed(3)); // za izpis v tabelo
-                //niz[4] = ((rateArray[1].value).toFixed(3)); // za izpis v tabelo
 
-
-                //niz[1] = ((levelArray[0].value).toFixed(3));
-                //niz[2] = ((levelArray[1].value).toFixed(3));
-
-
-                //dodajVrstico("tabela1", niz);
-                //niz = []; // niz izpraznimo
-
-                graf1.izriši(levelArray[1].value); // izrišemo vrednost stanja na graf
+                graf1.izriši(levelArray[0].value);
+                graf2.izriši(levelArray[1].value); // izrišemo vrednost stanja na graf
+                graf3.izriši(levelArray[2].value);
+                graf4.izriši(levelArray[3].value);
             }
 
             // *************************************************************************************************
@@ -190,51 +225,23 @@
                     rateArray[i].update(); // in vse vrednosti ažuriramo
                 }
 
-                //niz.push(čas);
-                //niz.push((levelArray[0].value).toFixed(3));
-                //niz.push((levelArray[1].value).toFixed(3));
-
-
-                //niz.push((rateArray[0].value).toFixed(3));
-                //niz.push((rateArray[1].value).toFixed(3));
-                //dodajVrstico("tabela1", niz);
-                //niz = []; // niz izpraznimo
 
                 graf1.izriši(levelArray[0].value); // izrišemo vrednost stanja na graf
                 graf2.izriši(levelArray[1].value);
+                graf3.izriši(levelArray[2].value);
+                graf4.izriši(levelArray[3].value);
             }
 
-            function dodajVrstico(idTabele, niz) {
-                // pridobimo referenco (sklic) na tabelo
-                var tabelaRef = document.getElementById(idTabele);
 
-                // dodamo novo vrstico na koncu tabele
-                var novaVrstica = tabelaRef.insertRow(tabelaRef.rows.length);
 
-                var novaCelica;
-                var novTekst;
 
-                for (var i = 0; i < niz.length; i++) {
-                    novaCelica = novaVrstica.insertCell(i);
-                    novTekst = document.createTextNode(niz[i]);
-                    novaCelica.appendChild(novTekst);
-                }
-            }
 
             function startGumb() {
-                stopČas = document.getElementById("stopČas").value; // preberemo stopČas iz upor. vmesnika
-                var PozDusenje = document.getElementById("PozDusenje").value;
-                var NegDusenje = document.getElementById("NegDusenje").value;
-
-                if (PozDusenje < 1 && PozDusenje >= 0)
-                {
-                    PozitivnoDusenje = PozDusenje;
-                }
-                if (NegDusenje > -1 && NegDusenje < 0)
-                    NegativnoDusenje = NegDusenje;
+                stopČas = document.getElementById("stopČas").value; // preberemo stopČas iz upor.
                 if (gumbStartPritisnjen == 0) {
                     gumbStartPritisnjen = 1;
                     start();
+
                 }
             }
 
@@ -244,6 +251,7 @@
                 }
                 else {
                     zanka();
+
                     aktiven = setTimeout("start()", 20); // na 10ms kličemo start();
                 }
             }
@@ -260,8 +268,11 @@
             }
 
             function load() {
+                LoadData();
                 graf1 = new Graf("platno1", 500, 4); // 1. arg=IDplatna, 2. arg=maksXos, 3. arg=maksYos
-                graf2 = new Graf("platno2", 500, 150);
+                graf2 = new Graf("platno2", 500, 40);
+                graf3 = new Graf("platno3", 500, 4);
+                graf4 = new Graf("platno4", 500, 4);
                 init(); // inicializiramo R(0), A(0); L(0) je sicer že inicializiran ob definiciji modela L(0)=10
             }
 
