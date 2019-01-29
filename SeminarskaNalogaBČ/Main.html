@@ -1,26 +1,67 @@
 ﻿<!doctype html>
 <meta charset="utf-8">
 
-<!-- Univerza v Mariboru | Fakulteta za organizacijske vede -->
-<!-- Laboratorij za kibernetiko in sisteme za podporo odločanju -->
-<!-- Andrej Škraba 2018 -->
 
 <html>
 <head>
     <title>Demonstracija imunskega sistema</title>
     <link rel="stylesheet" href="bootstrap.min.css">
-    <script src="bootstrap.min.js"></script>
     <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+
 </head>
 
 <body onload="load();">
-    <!-- ko se spletna stran odpre poženemo najprej fukcijo load() -->
+   
     <div class="container">
+        <h1>Model z agenti </h1>
+        <br />
+        <p style="text-align:justify">
+            <b>Imunski sistem</b> je obrambni mehanizem telesa. Je kot nekakšna vojska,
+            ki ščiti telo pred organizmi, ki povzročajo bolezni. To so virusi,
+            bakterije ali glivice, ki jih poznamo tudi pod imenom patogeni mikrobi.
+            Vojaki, ki sestavljajo to armado, so različne vrste belih krvničk, ki nastajajo v kostnem mozgu.
+            Kadar imunski sistem deluje učinkovito, je v stalni pripravljenosti, da nas zaščiti pred
+            okužbami in splošnimi napadi mikrobov vseh vrst.
+        </p>
+        <p style="text-align:justify">
+            Patogeni mikrobi, ki se jim uspe izogniti encimom sline in želodčni kislini,
+            morajo še vedno skozi sluz prebavil, ki jih lahko ujame in izloči.
+            Poleg tega vsebuje črevesje več kot 70 % telesne zaloge imunskih celic, ki poiščejo in uničijo patogene mikrobe,
+            ki jim je uspelo vdreti v telo skozi usta in želodec. Vsi patogeni mikrobi, ki pridejo v kri iz prebavnega trakta,
+            morajo na svoji poti skozi jetra, kjer se morajo spet spopasti z imunskimi celicami.
+            V kolikor patogenim mikrobom uspe vdreti v telo skozi vse te ovire in jim uspe okužiti celice,
+            se sproži delovanje imunskega sistema.
+        </p>
+        <h3>Princpi delovanja</h3>
+        <p style="text-align:justify">
+            Poškodovane celice kličejo na pomoč. Imunske celice pridejo in prepoznajo patogene mikrobe kot organizme, ki so telesu škodljivi, pokličejo na pomoč dodatne vojake, ki poskušajo uničiti patogene mikrobe.
+            Imunski sistem lahko ustvari protitelesa za te patogene mikrobe. Protitelesa so kot lisice, ki uklenejo škodljivca in omogočijo pripravljenim vojakom, da ga najdejo ter uničijo. Protitelesa ostanejo v sistemu za vsak slučaj, če bi se isti mikrobi ponovno pojavili.
+        </p>
+        <h3>
+            Demonstracija
+        </h3>
+        <p style="text-align:justify">
+            Za začetek pritisnite gumb start. <b style="color:red">Rdeči kvadratki</b> predstavljajo celice, ki so zdrave.
+            <b style="color:green">Zelen polni korg</b> predstavlja virus, ki ga vnesemo z gumbom Dodaj virus.
+            <b style="color:green">Zelen polni kvadrat</b> predstavlja okuženo celico. Prazni kvadrati z črno obrobo pa predstavlja
+            "vojake", ki iščejo in uničujejo okužene celice. Kot "vojak" trči z okuženo celice se združita in uničita. 
+            Sistem pa poskrbi, da ustvari nove, zdrave in imunce celice. Ustvai tudi nove vojake. Ko je v sistemu veliko okuženih 
+            celic se ustvari tudi več vojakov. 
+        </p>
+        <p>
+            V primeru, da želite odstraniti imunost celic kliknite gumb Ponastavi imunost.
+        </p>
         <br>
         <button type="button" class="btn btn-primary" onclick="startGumb();">Start</button>
         <button type="button" class="btn btn-danger" onclick="stop();">Stop</button>
         <button type="button" class="btn btn-success" onclick="koračniZagon();">Koračno</button>
-
+        <br />
+        <br />
+        <button class="btn btn-dark" onclick="DodajVirus();">dodaj virus</button>
+        <button class="btn btn-warning" onclick="PonastaviImunost();">Ponastavi imunost</button>
+        <br />
+        <br />
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text">Rdeči: </span>
@@ -32,20 +73,9 @@
             <input type="text" class="form-control" id="zeleni" />
         </div>
         <div class="input-group mb-3">
-           
-        </div>
-        <!--Rdeči: <input type="text" id="rdeči" value=0>
-        Zeleni: <input type="text" id="zeleni" value=0>-->
-        <br>
-        Število trkov: <input type="text" id="številoTrkov" value=0>
-        <p></p>
-        <canvas id="platno1" width="500" height="100" style="border:1px dashed #009999"></canvas>
-        <br>
-        <canvas id="platno2" width="500" height="100" style="border:1px dashed #009999"></canvas>
-        <br>
-        <button onclick="DodajVirus();">dodaj virus</button>
 
-        <button onclick="PonastaviImunost();">Ponastavi imunost</button>
+        </div>
+
         <br />
         <canvas id="cv1" width="1000" height="500" style="border:1px dashed #009999"></canvas>
         <br>
@@ -62,10 +92,8 @@
             var številoVojakov = 50;
             var števecZelenih = 0; // števec zelenih agentov
             var števecRdečih = 0; // števec rdečih agentov
-            var graf1; // spremenljivka oz. objekt razreda Graf
-            var graf2; // spremenljivka oz. objekt razreda Graf
-            var številoTrkovVkoraku = 0; // štejemo trke med celice ne glede na barvo
-            var številoTrkovZelenegaZrdečimVkoraku = 0; // štejemo le trke zelen-rdeč
+            
+           
             var aktiven; // za kontrolo izvedbe zanke start/stop
             var gumbStartPritisnjen = 0; // da onemogočimo večkratni zagon časovnika "setTimeout"
             var stopČas;
@@ -103,114 +131,11 @@
                     if (this.y > canvas.height - 10) { this.y = canvas.height - 10 };
                 }
             }
-
-            class Graf {
-                constructor(idPlatna, maxGrafX, maxGrafY) { // pri konstruktorju moramo podati ID platna, ki ga sicer ustvarimo v html-ju
-                    this.canvas = document.getElementById(idPlatna);
-                    this.ctx = this.canvas.getContext("2d");
-                    this.ctx.strokeStyle = "#ff0000"; // določimo rdečo barvo kot polnilo
-                    this.x = new Array(); // ustvarimo novo polje x
-                    this.y = new Array(); // ustvarimo novo polje y
-                    this.širinaPlatna = this.canvas.width;
-                    this.višinaPlatna = this.canvas.height;
-                    this.maxGrafX = maxGrafX;
-                    this.maxGrafY = maxGrafY;
-
-                    // napolnimo polje x; polje y polnimo sproti
-                    for (var i = 0; i < this.maxGrafX + 1; i++) {
-                        this.x[i] = i; // vrednost za x koordinato
-                    }
-                }
-
-                dodajVrednostAliBrišiInDodaj(yVrednost) {
-                    if (this.y.length == this.maxGrafX + 1) { // če je platno veliko 10x10 imamo 11x11 točk (zač. z 0)
-                        this.y.splice(0, 1); // na mestu 0 v polju y brišemo eno vrednost
-                        this.y[this.maxGrafX] = yVrednost; // novo vrednost dodamo na koncu polja
-                    }
-                    else {
-                        this.y.push(yVrednost); // če polje še ni polno potisnemo novo vrednost v polje
-                    }
-                }
-
-                izriši(yVrednost) {
-                    this.dodajVrednostAliBrišiInDodaj(yVrednost);
-                    this.ctx.clearRect(0, 0, this.širinaPlatna, this.višinaPlatna); // brišemo platno
-                    this.ctx.beginPath(); // za začetek izrisa
-
-                    for (var i = 0; i < this.y.length; i++) {
-                        this.ctx.lineTo(this.x[i] / this.maxGrafX * this.širinaPlatna, (this.višinaPlatna - (this.y[i] / this.maxGrafY) * this.višinaPlatna)); // za vrednosti y pomnožimo z višino platna
-                        // npr. 0.25 * 100 = 25
-                    }
-
-                    this.ctx.stroke(); // za prikaz črte
-                }
-
-            }
-
-            // razred za prikaz grafa drsečega povprečja
-            class GrafPovprečja {
-                constructor(idPlatna, maxGrafX, maxGrafY, dolžinaOkna) { // pri konstruktorju moramo podati ID platna, ki ga sicer ustvarimo v html-ju
-                    this.canvas = document.getElementById(idPlatna);
-                    this.ctx = this.canvas.getContext("2d");
-                    this.ctx.strokeStyle = "#ff0000"; // določimo rdečo barvo kot polnilo
-                    this.x = new Array(); // ustvarimo novo polje x
-                    this.y = new Array(); // ustvarimo novo polje y
-                    this.širinaPlatna = this.canvas.width;
-                    this.višinaPlatna = this.canvas.height;
-                    this.maxGrafX = maxGrafX; // maksimum po x osi
-                    this.maxGrafY = maxGrafY; // maksimum po y osi
-                    this.dolžinaOkna = dolžinaOkna; // dolžina okna pri drsečem povprečju
-                    this.yOkno = new Array(); // polje vrednosti za preračun povprečja
-                    this.povprečnaVrednost = 0;
-
-                    // napolnimo polje x; polje y polnimo sproti
-                    for (var i = 0; i < this.maxGrafX + 1; i++) {
-                        this.x[i] = i; // vrednost za x koordinato
-                    }
-                }
-
-                dodajVrednostAliBrišiInDodaj(yVrednost) {
-
-                    this.yOkno.push(yVrednost); // vrednost potisnemo v polje
-
-                    if (this.yOkno.length == this.dolžinaOkna + 1) {
-                        this.yOkno.splice(0, 1);
-                        this.povprečnaVrednost = this.yOkno.reduce(function (a, b) { return a + b; }) / this.dolžinaOkna;
-                    }
-
-                    else {
-                        this.povprečnaVrednost = 0;
-                    }
-
-                    if (this.y.length == this.maxGrafX + 1) { // če je platno veliko 10x10 imamo 11x11 točk (zač. z 0)
-                        this.y.splice(0, 1); // na mestu 0 v polju y brišemo eno vrednost
-                        this.y[this.maxGrafX] = this.povprečnaVrednost; // novo vrednost dodamo na koncu polja
-                    }
-                    else {
-                        this.y.push(this.povprečnaVrednost); // če polje še ni polno potisnemo novo vrednost v polje
-                    }
-                }
-
-                izriši(yVrednost) {
-                    this.dodajVrednostAliBrišiInDodaj(yVrednost);
-                    this.ctx.clearRect(0, 0, this.širinaPlatna, this.višinaPlatna); // brišemo platno
-                    this.ctx.beginPath(); // za začetek izrisa
-
-                    for (var i = 0; i < this.y.length; i++) {
-                        this.ctx.lineTo(this.x[i] / this.maxGrafX * this.širinaPlatna, (this.višinaPlatna - (this.y[i] / this.maxGrafY) * this.višinaPlatna)); // za vrednosti y pomnožimo z višino platna
-                        // npr. 0.25 * 100 = 25
-                    }
-
-                    this.ctx.stroke(); // za prikaz črte
-                }
-
-            }
             function preveriBližinoAgentov() {
                 OzdravljeneCelice = [];
                 OdstraniVojake = [];
                 OdstraniVirus = [];
-                številoTrkovVkoraku = 0; // ponastavimo števec števila trkov ob vsakem koraku
-                številoTrkovZelenegaZrdečimVkoraku = 0; // ponastavitev števca r-z
+   
                 for (var i = 0; i < številoCelic; i++) {
                     var A = celice[i];
 
@@ -222,12 +147,12 @@
                         var dy = B.y - A.y;
                         var dist = Math.sqrt(dx * dx + dy * dy);
 
-                        // če je razlika v razdalji med agentoma manjša od 10 izvedemo trk
-                        if (dist < 10) { // če je pogoj, da sta agenta dovolj blizu izpolnjen (trk)
-                            številoTrkovVkoraku++;
+                    
+                        if (dist < 10) { 
+                           
 
 
-                            izvediTrk(i, j); // izvedemo trk med agentoma z indeksoma i in j
+                            izvediTrk(i, j); 
 
                         }
                     }
@@ -239,10 +164,9 @@
                         var dy = B.y - A.y;
                         var dist = Math.sqrt(dx * dx + dy * dy);
 
-                        // če je razlika v razdalji med agentoma manjša od 10 izvedemo trk
-                        if (dist < 10) { // če je pogoj, da sta agenta dovolj blizu izpolnjen (trk)
-                            številoTrkovVkoraku++;
-
+                      
+                        if (dist < 10) { 
+                         
                             Okuzi(i, j); // izvedemo trk med agentoma z indeksoma i in
 
 
@@ -277,8 +201,6 @@
                         }
                     }
                 }
-
-                return številoTrkovVkoraku;
             }
 
             function Okuzi(indeksPrvega, indeksDrugega) {
@@ -350,18 +272,17 @@
                 celice[indeksDrugega].xVel = tempX;
                 celice[indeksDrugega].yVel = tempY;
 
-                // če trčita zeleni in rdeči, rdeči postane zelen
-                // če je prvi rdeč (0) in drugi zelen (1)
+               
                 if (celice[indeksPrvega].okuzen == 0 && celice[indeksDrugega].okuzen == 1) {
                     if (celice[indeksPrvega].imun != 1)
                         celice[indeksPrvega].okuzen = 1; // prvega, ki je bil prej rdeč(0) prebarvamo na zeleno (1)
-                    številoTrkovZelenegaZrdečimVkoraku++; // povečamo števec trkov zelen-rdeč
+                   
                 }
                 // če je prvi zelen (1) in drugi rdeč (0)
                 if (celice[indeksPrvega].okuzen == 1 && celice[indeksDrugega].okuzen == 0) {
                     if (celice[indeksDrugega].imun != 1)
                         celice[indeksDrugega].okuzen = 1; // drugega, ki je bil prej rdeč(0) prebarvamo na zeleno (1)
-                    številoTrkovZelenegaZrdečimVkoraku++; // povečamo števec trkov zelen-rdeč
+                
                 }
 
             }
@@ -379,11 +300,10 @@
                 števecRdečih = 0;
                 števecZelenih = 0;
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // brišemo celotno platno
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                //preveriBližinoAgentov();
 
-                document.getElementById("številoTrkov").value = preveriBližinoAgentov();
+                preveriBližinoAgentov();
                 izbrišiAgente(celice, OzdravljeneCelice);
                 izbrišiAgente(vojaki, OdstraniVojake);
                 izbrišiAgente(virusi, OdstraniVirus);
@@ -398,14 +318,14 @@
 
                 celice.forEach(function (agent) {
                     if (agent.okuzen == 1) {
-                        ctx.fillStyle = "#00ff00"; // določimo zeleno barvo
+                        ctx.fillStyle = "#00ff00"; 
                         števecZelenih++;
                     }
                     else {
-                        ctx.fillStyle = "#ff0000"; // sicer nastavimo rdečo barvo
+                        ctx.fillStyle = "#ff0000"; 
                         števecRdečih++;
                     }
-                    ctx.fillRect(agent.x, agent.y, 10, 10); // agenta postavimo na platno
+                    ctx.fillRect(agent.x, agent.y, 10, 10); 
 
                 });
 
@@ -446,21 +366,19 @@
 
                 }
 
-                graf1.izriši(števecZelenih);
-                graf2.izriši(številoTrkovZelenegaZrdečimVkoraku);
 
-                čas++; // čas povečamo za 1
+                čas++; 
 
-                //.getElementById("številka").value = čas; // izpišemo časovni korak
-                document.getElementById("rdeči").value = števecRdečih; // izpišemo št. rdečih
-                document.getElementById("zeleni").value = števecZelenih; // izpišemo št. zelenih
+             
+                document.getElementById("rdeči").value = števecRdečih; 
+                document.getElementById("zeleni").value = števecZelenih; 
 
             }
 
             function load() {
                 canvas = document.getElementById("cv1");
                 ctx = canvas.getContext("2d");
-                // določimo rdečo barvo kot polnilo
+               
                 for (var i = 0; i < številoVirusov; i++) {
                     virusi[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
 
@@ -472,8 +390,7 @@
 
                 for (var i = 0; i < številoVojakov; i++) {
                     vojaki[i] = new Agent(Math.random() * canvas.width, Math.random() * canvas.height, 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, 0); // ustvarimo agenta v polju celice z indeksom 0
-                    //ctx.fillStyle = "#00ff00";
-                    //ctx.strokeStyle = "#000000";
+                    
                     ctx.strokeRect(vojaki[i].x, vojaki[i].y, 10, 10);
                 }
 
@@ -484,25 +401,14 @@
                     celice[i].okuzen = 0;
                     celice[i].imun = 0;
                     ctx.fillRect(celice[i].x, celice[i].y, 10, 10); // agenta postavimo na platno
-                    //ctx.fillStyle = "#3370d4";
+                    
 
 
                 }
-                //celice[0].barva = 1;
-
-                //ctx.fillStyle = "#00ff00"; // za agenta z indeksom [0] povemo, da je zelen
-                //ctx.fillRect(celice[0].x, celice[0].y, 10, 10); // agenta postavimo na platno
-
-                graf1 = new Graf("platno1", 5000, 500); // argumenti funkcije: idPlatna, maxGrafX, maxGrafY
-                graf2 = new GrafPovprečja("platno2", 5000, 0.5, 300); // graf za prikaz povprečja trkov
-
-                //document.getElementById("številka").value = čas; // izpišemo časovni korak
-
-                //  zanka(); // kličemo funkcijo za izvedbo animacije
             }
 
             function startGumb() {
-                //stopČas = document.getElementById("stopČas").value; // preberemo stopČas iz upor. vmesnika
+               
                 if (gumbStartPritisnjen == 0) {
                     gumbStartPritisnjen = 1;
                     start();
@@ -512,7 +418,7 @@
             function start() {
 
                 zanka();
-                aktiven = setTimeout("start()", 1); // na 10ms kličemo start();
+                aktiven = setTimeout("start()", 1); 
 
             }
 
